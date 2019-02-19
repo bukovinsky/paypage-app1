@@ -1,6 +1,14 @@
-<form method={{context.method}} action={{context.action}}>
-{% for field in resform %}
-  <input name="{{field.name}}" value="{{field.default}}"/>
-{% endfor %}
-  <input type="submit">
-</form>
+<!DOCTYPE html>
+<html>
+<head>
+	
+</head>
+<body>
+    <form method="{{context.formmethod}}" action="{{context.action}}">
+    {% for field in resform %}
+    <input name="{{field.name}}" value="{{field.default}}"/>
+    {% endfor %}
+    <input type="submit">
+    </form>
+</body>
+</html>

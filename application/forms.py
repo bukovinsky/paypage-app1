@@ -1,11 +1,15 @@
 from flask import make_response, render_template
+import re
 from wtforms.form import Form
-from wtforms import SelectField, TextAreaField, HiddenField, DecimalField, SubmitField, StringField
+from wtforms import SelectField, TextAreaField, HiddenField, DecimalField, SubmitField
 from wtforms.validators import Required
+
+
+
 
 class MainForm(Form):
     amount = DecimalField(places=2, validators=[Required()])
-    currency = SelectField(choices=[('840','USD'),('643','RUB'),('978','EUR'),('980','UAH')])
+    currency = SelectField(choices=[('840','USD'),('643','RUB'),('978','EUR')])
     prod_descript = TextAreaField(u'Описание продукта')
     submit = SubmitField()
 
@@ -19,4 +23,4 @@ def create_form(fields, from_data):
     return DynamicForm()
 
 def setField(val=None):
-    return StringField(default='' if val is None else val)
+    return TextAreaField(default='' if val is None else val)

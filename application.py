@@ -1,88 +1,48 @@
-from flask import Flask, render_template, redirect, request, make_response
+import logging
+from flask import Flask, render_template, session, redirect, url_for, request, make_response
+from application.forms import MainForm, create_form
 import requests
-from forms import *
-from hashlib import sha256
-from models import *
-from views import *
+# application
+from application.views import Payment
+from application.models import *
 
+# Basic configuration for logging
+logging.basicConfig(filename='loggingg.log', filemode='w', level=logging.DEBUG)
 
 STORE_SETTINGS = {
-    'payway':'payeer_rub',
-    'secret_key':'SecretKey01',
-    'store_currency':'840',
+    'STORE_SECRET':'SecretKey01',
+    'STORE_CURRENCY':'840',
     'shop_id':'5',
-    'shop_order_id':'53861',
-    'ways':{
-        'eur':{
-            'method':'GET',
-            'link':'https://pay.piastrix.com/ru/pay'
-        },
-        'rub':{
-            'method':'POST',
-            'link':'https://core.piastrix.com/invoice/create'
-        },
-        'usd':{
-            'method':'POST',
-            'link':'https://core.piastrix.com/bill/create'
-        }
-    }
+    'currencies':('978', '840', '643', '980'),
+    'payway':'payeer_rub',
+    #'form_fields': list(MainForm._meta.fields.keys()),
 }
 
+DATABASE = {
+    'name':'database/pbase.db',
+    'engine':'peewee.SqliteDatabase'
+}
+SECRET_KEY = 'd0231b4d850c657d6f5d31a56c68469c14ebd26ad3151dd18bde5e90b585f9c8'
+
+CURRENCIES_METHODS = {
+    '0':'',
+    '978':'',
+    '840':'',
+    '643':'',
+}
+
+
 app = Flask(__name__)
+app.config.from_object(__name__)
 
-
-
-"""
-    Запись в базу на основе существующей формы.
-    -- data
-"""
-def record_to_database(forModel, data):
-    db.connect()
-    forModel.create(**data)
-
-@app.route('/', methods=['GET', 'POST'])
-def main_application():
+@app.route('/', methods=['GET','POST'])
+def index():
     frm = MainForm()
     if request.method=='POST':
-        cur = request.form.get('currency')
-        frm = request.form.to_dict()
-        data = {**frm,**STORE_SETTINGS}
-        std_keys=('currency','shop_id','shop_order_id','amount','payway')
-        
-        if cur=='978':
-            data['sign']=create_sign(std_keys[:-1], **data)
-            l_form = create_form(('currency','shop_id','shop_order_id','amount','sign'), data)
-            return render_template('form_template.html', resform=l_form, context={'method':'GET', 'action':data['ways']['eur']['link']})
+        paym = Payment(request, STORE_SETTINGS)
+        return make_response(paym.make_result(PaymentParams, 'payCurrency', request.form.get('currency')))
 
-        elif cur=='840':
-            req_keys = ('payer_currency','shop_currency','shop_id','shop_order_id','shop_amount')
-            payload = {
-                'payer_currency':data.get('currency'),
-                'shop_currency':data.get('store_currency'),
-                'shop_id':data.get('shop_id'),
-                'shop_order_id':data.get('shop_order_id'),
-                'shop_amount':data.get('amount'),
-            }
-            payload['sign']=create_sign(req_keys, **{**payload, \
-                'secret_key':data['secret_key']})
-            post_r = requests.post('https://core.piastrix.com/bill/create', json=payload)
-            return redirect(post_r.json().get('data').get('url'))
-
-        elif cur=='643':
-            payload = {}.fromkeys(std_keys)
-            for key in payload.keys():
-                payload[key]=data.get(key)
-            post_r = requests.post('https://core.piastrix.com/invoice/create',\
-                json={**payload, 'sign':create_sign(std_keys, **{**payload, 'secret_key':data['secret_key']})})
-            r_data = post_r.json().get('data')
-            print(r_data.get('data'))
-            fm = create_form(r_data.get('data').keys(), r_data.get('data'))
-            print(r_data.get('method'))
-            print(post_r.json())
-            return render_template('form_template.html', resform=fm, context={'method':'GET', 'action':r_data.get('url')})
-    else:
-        return render_template('spa_application.html', frm=frm)
-
+    return render_template('spa_application.html', frm=frm)
 
 if __name__ == '__main__':
     app.run(debug=True)
