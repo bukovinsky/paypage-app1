@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>SPA for Payments</title>
+	<meta name="description" content="">
+	<meta name="author" content="Vladislav Bukov">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+	<div class="container">
+		<div id="application" class="">
+			<form method="POST">
+				<div class="form-group">
+					<label for="InputAmount">К оплате</label>
+					<div class="row">
+						<div class="col-sm-12 col-md-8 col-lg-8">
+							{{frm.amount(class="form-control", id="InputAmount", placeholder="Сумма")}}
+						</div>
+						<div class="col-sm-12 col-md-4 col-lg-4">
+							{{frm.currency(class="form-control", id="currencySelect")}}
+						</div>
+					</div>
+					<small id="amountHelp" class="form-text text-muted">Введите сумму оплаты в числовом представлении, а также выберите валюту для оплаты</small>
+				</div>
+
+				<div class="form-group">
+					{{frm.prod_descript(class="form-control", id="Description")}}
+					<small id="descriptionHelp" class="form-text text-muted">Введите описание товара</small>
+				</div>
+				<div class="row">
+					<div class="col-sm-6 offset-sm-3 col-md-4 offset-md-4 col-lg-4 offset-lg-4 col-xl-4 offset-xl-4">
+						<div style="display: block;">
+							{{frm.submit(class="btn bg-primary text-white mx-auto", value="Перейти к оплате")}}
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>
